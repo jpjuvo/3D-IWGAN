@@ -2,6 +2,8 @@ import numpy as np
 import sys 
 import os 
 from subprocess import call
+import glob
+from tqdm import tqdm
 
 
 # this is mostly from https://github.com/chrischoy/3D-R2N2/blob/master/lib/voxel.py 
@@ -59,14 +61,26 @@ def voxel2obj(filename, pred, threshold=.3):
 
 
 if len(sys.argv) <1:
-    print('you need to specify what set of voxels to use')
-models = np.load(sys.argv[1])
-print(models.shape)
-for i,m in enumerate(models):
-    voxel2obj('current.obj', m)
-    print('-----------')
-    print('displaying')
-    print('-----------')
-    call(['meshlab', 'current.obj'],  stdout=open(os.devnull, 'wb'))
-#os.system('start current.obj')
+    print('Please give a directory to voxels')
+modelFiles = glob.glob((sys.argv[1]) + '/*.npy')
+print('found ' + str(len(modelFiles)) + ' models')
+
+#make save directory
+modelDir = (sys.argv[1]) + '/models/'
+if not os.path.exists(modelDir):
+        os.makedirs(modelDir)
+		
+for mFile in tqdm(modelFiles):
+    #Check if this has been done previously
+    elts = os.path.split(mFile)
+    nameonly = os.path.splitext(elts[1])
+    newFile = modelDir + nameonly[0] + '.obj'
+    if(os.path.isfile(newFile)):
+        continue
+    #Load model
+    models = np.load(mFile)
+    for i,m in enumerate(models):
+        voxel2obj(newFile, m)
+        break
+
 

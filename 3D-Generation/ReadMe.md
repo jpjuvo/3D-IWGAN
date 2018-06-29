@@ -17,6 +17,8 @@ The dataset you can use to train is the modelNet10 dataset which can be download
 **Additional Details**: <br />
 * To evaluate the output you can use the visualize.py script.
   * To use this just call python visualize.py VOXEL_FILE, where voxel_file is the file created during training and saved to         savepoint/NAME/EPOCH.npy.
+* To convert all VOXEL files to *.obj format, you can use visualize_all.py script. New .obj files are saved to 'savepoint/NAME/models' directory.
+  * Call python visualize_all.py VOXEL_DIR, where voxel_dir is the 'savepoint/NAME' directory 
 * For the 3D-IWGAN model, graphs will also be created which allow you to track the discriminator's loss
   * The loss should at first raise rapidly but then begin to decrease
   * This decreasing loss can be used to track convergence
