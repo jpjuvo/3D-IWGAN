@@ -11,7 +11,7 @@ from glob import glob
 
 def Deconv(inputs, f_dim_in, dim, net, batch_size, f_dim_out = None, stride = 2 ):
 	if f_dim_out is None: 
-		f_dim_out = f_dim_in/2 
+		f_dim_out = int(f_dim_in/2) 
 	return tl.layers.DeConv3dLayer(inputs,
 								shape = [4, 4, 4, f_dim_out, f_dim_in],
 								output_shape = [batch_size, dim, dim, dim, f_dim_out],
@@ -62,7 +62,7 @@ def generator_32(inputs, is_train=True, reuse=False, batch_size = 128, sig = Fal
 	output_size, half, forth, eighth, sixteenth = 32, 16, 8, 4, 2
 	gf_dim = 256 # Dimension of gen filters in first conv layer
 	with tf.variable_scope("gen", reuse=reuse) as vs:
-		tl.layers.set_name_reuse(reuse)
+		#tl.layers.set_name_reuse(reuse)
 
 		net_0 = tl.layers.InputLayer(inputs, name='g/net_0/in')
 
@@ -97,21 +97,21 @@ def discriminator(inputs ,output_size, improved = False, VAE_loss = False, sig =
 	df_dim = output_size # Dimension of discrim filters in first conv layer
 
 	with tf.variable_scope("dis", reuse=reuse) as vs:
-		tl.layers.set_name_reuse(reuse)
+		#tl.layers.set_name_reuse(reuse)
 
 		net_0 = tl.layers.InputLayer(inputs, name='d/net_0/in')
 
 		net_1 = Conv3D(net_0, df_dim, '1', f_dim_in = 1 , batch_norm = False ) 
-		net_1.outputs = tl.activation.leaky_relu(net_1.outputs, alpha=0.2, name='d/net_1/lrelu')
+		net_1.outputs = tf.nn.leaky_relu(net_1.outputs, alpha=0.2, name='d/net_1/lrelu')
 		
 		net_2 = Conv3D(net_1, df_dim*2, '2', batch_norm = not improved, is_train = is_train,) 
-		net_2.outputs = tl.activation.leaky_relu(net_2.outputs, alpha=0.2, name='d/net_2/lrelu')
+		net_2.outputs = tf.nn.leaky_relu(net_2.outputs, alpha=0.2, name='d/net_2/lrelu')
 		
 		net_3 = Conv3D(net_2, df_dim*4, '3', batch_norm = not improved, is_train = is_train)  
-		net_3.outputs = tl.activation.leaky_relu(net_3.outputs, alpha=0.2, name='d/net_3/lrelu')
+		net_3.outputs = tf.nn.leaky_relu(net_3.outputs, alpha=0.2, name='d/net_3/lrelu')
 		
 		net_4 = Conv3D(net_3, df_dim*8, '4', batch_norm = not improved, is_train = is_train)   
-		net_4.outputs = tl.activation.leaky_relu(net_4.outputs, alpha=0.2, name='d/net_4/lrelu')
+		net_4.outputs = tf.nn.leaky_relu(net_4.outputs, alpha=0.2, name='d/net_4/lrelu')
 		
 		net_5 = FlattenLayer(net_4, name='d/net_5/flatten')
 		net_5 = tl.layers.DenseLayer(net_5, n_units=output_units, act=tf.identity,
