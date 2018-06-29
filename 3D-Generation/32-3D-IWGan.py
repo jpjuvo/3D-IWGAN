@@ -5,7 +5,7 @@ sys.path.insert(0, '../')
 import tensorlayer as tl
 import numpy as np
 import random 
-from glob import glob
+import glob
 import argparse
 import scripts
 from scripts.GANutils import *
@@ -80,7 +80,7 @@ g_optim = tf.train.AdamOptimizer( learning_rate = 1e-4, beta1=0.5, beta2=0.9).mi
 
 ####### Training ################
 sess=tf.Session()
-tl.ops.set_gpu_fraction(sess=sess, gpu_fraction=0.998)
+#tl.ops.set_gpu_fraction(sess=sess, gpu_fraction=0.998)
 sess.run(tf.global_variables_initializer())
 
 # load checkpoints
@@ -91,11 +91,12 @@ else:
     track_d_loss_iter, track_d_loss, iter_counter = [],[],0
 
 iter_counter = iter_counter - (iter_counter %5)
-files,_ = grab_files(args.data)
+print(args.data)
+files = glob(args.data + '/*.npy') #grab_files(args.data)
 #training starts here  
 for epoch in range(args.epochs):
     random.shuffle(files)
-    for idx in xrange(0, len(files)/args.batchsize):
+    for idx in range(0, int(len(files)/args.batchsize)):
         file_batch = files[idx*args.batchsize:(idx+1)*args.batchsize]
         models, start_time = make_inputs(file_batch)
         
